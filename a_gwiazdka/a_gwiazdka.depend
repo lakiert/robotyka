@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1665444378 source:d:\lekcje_uwm\semestr5\robotyka\lab1\a_gwiazdka\main.cpp
+	<iostream>
+	<math.h>
+	<list>
+
