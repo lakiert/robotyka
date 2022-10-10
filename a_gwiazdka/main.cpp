@@ -20,10 +20,9 @@ return h;
 
 int funkcja_g(int from_x, int from_y, int to_x, int to_y)
 {
-int g=0;
 int krok_x = abs(from_x - to_x);
 int krok_y = abs(from_y - to_y);
-g = krok_x+krok_y;
+int g = krok_x+krok_y;
 return g;
 }
 
