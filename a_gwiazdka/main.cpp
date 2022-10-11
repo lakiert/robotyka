@@ -5,16 +5,9 @@
 
 using namespace std;
 
-class Kratka{
-public:
-    int poz_x;
-    int poz_y;
-    int parent;
-};
-
-double funkcja_h(int pozx, int pozy, Kratka cel)
+double funkcja_h(int pozx, int pozy, int celx, int cely)
 {
-double h = sqrt(pow((pozx-cel.poz_x),2)+pow((pozy-cel.poz_y),2));
+double h = sqrt(pow((pozx-celx),2)+pow((pozy-cely),2));
 return h;
 }
 
@@ -29,27 +22,35 @@ return g;
 
 int main()
 {
+    int mapa_rows = 5;
+    int mapa_columns = 5;
+    int mapa[mapa_rows][mapa_columns] = { {0,0,0,0,0}, {0,0,0,0,1}, {1,1,0,0,1}, {0,0,0,0,0}, {0,0,1,0,0} };
 
-// tworze kratke cel i nadaje parametry pozycji
-    Kratka cel;
-    cel.poz_x = 5;
-    cel.poz_y = 5;
-
-// tworze punkt startowy i nadaje parametry pozycji
-    Kratka start;
-    start.poz_x = 0;
-    start.poz_y = 0;
+    int poczatek[2]={0,0};
+    int koniec[2]={5,5};
+    int otwarta[4][2]={};
+    int pusta[mapa_rows*mapa_columns][2];
+    pusta[0][0]=koniec[0];
+    pusta[0][1]=koniec[1];
 
 // heurystyka, x i y dla rozwazanej kratki
-    double h = funkcja_h(2,3,cel);
+    double h = funkcja_h(2,3,7,8);
     cout<<h;
-
-
-    Kratka otwarta[100];
-    Kratka zamknieta[100]={start};
 
     int jakies_g = funkcja_g(2,2,5,0);
     cout << "\n" << jakies_g;
+
+
+    for(int i =0; i<=mapa_rows-1; i++)
+    {
+        cout<<endl;
+        for(int j=0; j<=mapa_columns-1; j++)
+        {
+            cout<<mapa[i][j];
+            cout<<" ";
+        }
+
+    }
 
     return 0;
 }
