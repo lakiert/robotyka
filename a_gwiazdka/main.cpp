@@ -20,18 +20,43 @@ return g;
 }
 
 
+void map_print(int mapa[][5], int rows, int columns)
+{
+    for(int i =0; i<=rows-1; i++)
+    {
+        cout<<endl;
+        for(int j=0; j<=columns-1; j++)
+        {
+            cout<<mapa[i][j];
+            cout<<" ";
+        }
+
+    }
+
+}
+
+   // int mapa_rows = 5;
+   // int mapa_columns = 5;
+
+   // int mapa[mapa_rows][mapa_columns] = { {0,0,0,0,0}, {0,0,0,0,1}, {1,1,0,0,1}, {0,0,0,0,0}, {0,0,1,0,0} };
+
 int main()
 {
+
     int mapa_rows = 5;
     int mapa_columns = 5;
-    int mapa[mapa_rows][mapa_columns] = { {0,0,0,0,0}, {0,0,0,0,1}, {1,1,0,0,1}, {0,0,0,0,0}, {0,0,1,0,0} };
+    int mapa[5][5] = { {0,0,0,0,0}, {0,0,0,0,1}, {1,1,0,0,1}, {0,0,0,0,0}, {0,0,1,0,0} };
+
+    ////////////////////////////////////////////////////////////////////////////////////
 
     int poczatek[2]={0,0};
     int koniec[2]={5,5};
-    int otwarta[4][2]={};
-    int pusta[mapa_rows*mapa_columns][2];
-    pusta[0][0]=koniec[0];
-    pusta[0][1]=koniec[1];
+    int otwarta[4][3]={};
+    int zamknieta[mapa_rows*mapa_columns][2];
+    int trasa[mapa_rows*mapa_columns][3];
+
+
+    ////////////////////////////////////////////////////////////////////////////////////
 
 // heurystyka, x i y dla rozwazanej kratki
     double h = funkcja_h(2,3,7,8);
@@ -41,16 +66,33 @@ int main()
     cout << "\n" << jakies_g;
 
 
-    for(int i =0; i<=mapa_rows-1; i++)
-    {
-        cout<<endl;
-        for(int j=0; j<=mapa_columns-1; j++)
-        {
-            cout<<mapa[i][j];
-            cout<<" ";
-        }
+    ////////////////////////////////////////////////////////////////////////////////////
 
-    }
+    map_print(mapa, mapa_rows, mapa_columns);
+
+    ////////////////////////////////////////////////////////////////////////////////////
+
+    mapa[poczatek[0]][poczatek[1]]=3;
+    mapa[koniec[0]-1][koniec[1]-1]=3;
+    cout<<endl;
+
+    ////////////////////////////////////////////////////////////////////////////////////
+
+    map_print(mapa, mapa_rows, mapa_columns);
+
+    ////////////////////////////////////////////////////////////////////////////////////
+
+
+    zamknieta[0][0]=poczatek[0];
+    zamknieta[0][1]=poczatek[1];
+    trasa[0][0]=poczatek[0];
+    trasa[0][1]=poczatek[1];
+
+
+
+
+
+
 
     return 0;
 }
