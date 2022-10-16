@@ -61,9 +61,24 @@ if ( (map[x][y+1] == 0) && ((y+1) <= wym1) )
 		cout<<"prawo istnieje\n";
 		otwarta[x][y+1] = map[x][y+1];
 	}
+}	
 	
 
+void wyczysc_otwarta(int otwarta[wym2][wym1])
+{
+	for(int i=1;i<wym2+1;i++)
+ 	{
+  		for(int j=1;j<wym1+1;j++)
+  		{
+    		otwarta[i][j] = 1;
+   		}
+ 	}
 }
+
+
+
+
+
 
 
 
@@ -78,8 +93,8 @@ string nazwap="grid.txt";
 
 
 int map[wym2][wym1];
-int start = map[0][0];
-int cel = map[2][2];
+int& start = map[1][1];
+int& cel = map[3][3];
 int parent[wym2][wym1];
 double f[wym2][wym1];
 int g[wym2][wym1];
@@ -88,6 +103,8 @@ double h[wym2][wym1];
 int otwarta[wym2][wym1];
 int zamknieta[wym2][wym1];
 zamknieta[0][0] = start;
+double koszta[wym2][wym1];
+int trasa[wym2][wym1];
 
  //wypelnianie listy otwartej
  for(int i=1;i<wym2+1;i++)
@@ -168,6 +185,20 @@ for(int i=1;i<wym2+1;i++)
     cout<<" "<<otwarta[i][j];
    }cout<<"\n";
  }
+ 
+ 
+ wyczysc_otwarta(otwarta);
+ 
+ cout<<endl<<endl;
+for(int i=1;i<wym2+1;i++)
+ {
+  for(int j=1;j<wym1+1;j++)
+   {
+    cout<<" "<<otwarta[i][j];
+   }cout<<"\n";
+ }
+ 
+
 
 
 
