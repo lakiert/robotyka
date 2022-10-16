@@ -1,9 +1,13 @@
 #include <iostream>
+#include <fstream>
 #include<math.h>
 #include<list>
 #include <stdlib.h>
 
 using namespace std;
+
+const int wym2=3;
+const int wym1=3;
 
 double funkcja_h(int pozx, int pozy, int celx, int cely)
 {
@@ -20,76 +24,157 @@ return g;
 }
 
 
-void map_print(int mapa[][5], int rows, int columns)
-{
-    for(int i =0; i<=rows-1; i++)
-    {
-        cout<<endl;
-        for(int j=0; j<=columns-1; j++)
-        {
-            cout<<mapa[i][j];
-            cout<<" ";
-        }
+//void mozliwe_do_odwiedzenia(int** map, int x, int y, int** otwarta)
+//{
+//	
+//	if (map[y+1][x] == 0)
+//	{
+//		cout<<"dol intnieje";
+//	}
+//	
+//
+//}
 
-    }
+void mozliwe_do_odwiedzenia(int map[wym2][wym1], int otwarta[wym2][wym1], int x, int y)
+{
+	
+if ( (map[x+1][y] == 0) && ((x+1) <= wym2) )
+	{
+		cout<<"dol istnieje\n";
+		otwarta[x+1][y] = map[x+1][y];
+	}	
+	
+if ( (map[x][y-1] == 0) && ((y-1) > 0) )
+	{
+		cout<<"lewo istnieje\n";
+		otwarta[x][y-1] = map[x][y-1];
+	}
+	
+if ( (map[x-1][y] == 0) && ((x-1) > 0) )
+	{
+		cout<<"gora istnieje\n";
+		otwarta[x-1][y] = map[x-1][y];
+	}	
+	
+if ( (map[x][y+1] == 0) && ((y+1) <= wym1) ) 
+	{
+		cout<<"prawo istnieje\n";
+		otwarta[x][y+1] = map[x][y+1];
+	}
+	
 
 }
 
-   // int mapa_rows = 5;
-   // int mapa_columns = 5;
 
-   // int mapa[mapa_rows][mapa_columns] = { {0,0,0,0,0}, {0,0,0,0,1}, {1,1,0,0,1}, {0,0,0,0,0}, {0,0,1,0,0} };
 
 int main()
 {
 
-    int mapa_rows = 5;
-    int mapa_columns = 5;
-    int mapa[5][5] = { {0,0,0,0,0}, {0,0,0,0,1}, {1,1,0,0,1}, {0,0,0,0,0}, {0,0,1,0,0} };
+///////////////////////////////////////////////////////////////////////
 
-    ////////////////////////////////////////////////////////////////////////////////////
+cout<<"Wczytywanie danych z pliku\n";
 
-    int poczatek[2]={0,0};
-    int koniec[2]={5,5};
-    int otwarta[4][3]={};
-    int zamknieta[mapa_rows*mapa_columns][2];
-    int trasa[mapa_rows*mapa_columns][3];
+string nazwap="grid.txt";
 
 
-    ////////////////////////////////////////////////////////////////////////////////////
+int map[wym2][wym1];
+int start = map[0][0];
+int cel = map[2][2];
+int parent[wym2][wym1];
+double f[wym2][wym1];
+int g[wym2][wym1];
+double h[wym2][wym1];
 
-// heurystyka, x i y dla rozwazanej kratki
-    double h = funkcja_h(2,3,7,8);
-    cout<<h;
+int otwarta[wym2][wym1];
+int zamknieta[wym2][wym1];
+zamknieta[0][0] = start;
 
-    int jakies_g = funkcja_g(2,2,5,0);
-    cout << "\n" << jakies_g;
-
-
-    ////////////////////////////////////////////////////////////////////////////////////
-
-    map_print(mapa, mapa_rows, mapa_columns);
-
-    ////////////////////////////////////////////////////////////////////////////////////
-
-    mapa[poczatek[0]][poczatek[1]]=3;
-    mapa[koniec[0]-1][koniec[1]-1]=3;
-    cout<<endl;
-
-    ////////////////////////////////////////////////////////////////////////////////////
-
-    map_print(mapa, mapa_rows, mapa_columns);
-
-    ////////////////////////////////////////////////////////////////////////////////////
+ //wypelnianie listy otwartej
+ for(int i=1;i<wym2+1;i++)
+ {
+  for(int j=1;j<wym1+1;j++)
+   {
+    otwarta[i][j] = 1;
+   }
+ }
 
 
-    zamknieta[0][0]=poczatek[0];
-    zamknieta[0][1]=poczatek[1];
-    trasa[0][0]=poczatek[0];
-    trasa[0][1]=poczatek[1];
+//teraz deklarujemy dynamicznie tablice do, której wczytamyu nasz plik,
+int rows = wym2+1;
+double **G;
+G = new double*[rows];
+while(rows--) G[rows] = new double[wym1+1];
+
+cout<<"\n\nNacisnij ENTER aby wczytac tablice o nazwie "<< nazwap;
+getchar();
+
+std::ifstream plik(nazwap.c_str());
+  
+for ( unsigned int i=1;i<wym2+1;i++)    
+  {
+    for ( unsigned int j=1;j<wym1+1;j++) 
+    {
+         plik >> G[i][j];
+    }
+  }  
+plik.close();
+
+
+//wypelnianie mapy
+for(int i=1;i<wym2+1;i++)
+ {
+  for(int j=1;j<wym1+1;j++)
+   {
+    map[i][j] = G[i][j];
+   }
+ }
+ 
 
 
 
+cout<<"\nWypisujemy na ekran\n\n";
+for(int i=1;i<wym2+1;i++)
+ {
+  for(int j=1;j<wym1+1;j++)
+   {
+    cout<<" "<<map[i][j];
+   }cout<<"\n";
+ }
+   
+//na koniec czyścimy pamięć po naszej tablicy
+for(int i=0;i<wym2+1;i++)
+{delete[] G[i];}//czyscimy wiersze
+delete[] G;//zwalniamy tablice wskaznikow do wierszy
+
+///////////////////////////////////////////////////////////////////////
+
+cout<<endl<<endl;
+
+for(int i=1;i<wym2+1;i++)
+ {
+  for(int j=1;j<wym1+1;j++)
+   {
+    cout<<" "<<map[i][j];
+   }cout<<"\n";
+ }
+
+mozliwe_do_odwiedzenia(map, otwarta, 1, 1);
+
+cout<<endl<<endl;
+for(int i=1;i<wym2+1;i++)
+ {
+  for(int j=1;j<wym1+1;j++)
+   {
+    cout<<" "<<otwarta[i][j];
+   }cout<<"\n";
+ }
+
+
+
+
+
+cout<<"\n\nNacisnij ENTER aby zakonczyc";
+getchar();
 
 
 
