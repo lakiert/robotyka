@@ -9,59 +9,81 @@ using namespace std;
 const int wym2=3;
 const int wym1=3;
 
-double funkcja_h(int pozx, int pozy, int celx, int cely)
+float funkcja_h(int start_x, int start_y, int cel_x, int cel_y)
 {
-double h = sqrt(pow((pozx-celx),2)+pow((pozy-cely),2));
+float h = sqrt(pow((start_x-cel_x),2)+pow((start_y-cel_y),2));
 return h;
 }
 
-int funkcja_g(int from_x, int from_y, int to_x, int to_y)
+float funkcja_g(int from_x, int from_y, int to_x, int to_y)
 {
-int krok_x = abs(from_x - to_x);
-int krok_y = abs(from_y - to_y);
-int g = krok_x+krok_y;
+float krok_x = abs(from_x - to_x);
+float krok_y = abs(from_y - to_y);
+float g = krok_x+krok_y;
 return g;
 }
 
 
-//void mozliwe_do_odwiedzenia(int** map, int x, int y, int** otwarta)
-//{
-//	
-//	if (map[y+1][x] == 0)
-//	{
-//		cout<<"dol intnieje";
-//	}
-//	
-//
-//}
 
-void mozliwe_do_odwiedzenia(int map[wym2][wym1], int otwarta[wym2][wym1], int x, int y)
+
+void mozliwe_do_odwiedzenia(int map[wym2][wym1], int otwarta[wym2][wym1], int parent[wym2][wym1], int x, int y)
 {
 	
 if ( (map[x+1][y] == 0) && ((x+1) <= wym2) )
 	{
 		cout<<"dol istnieje\n";
-		otwarta[x+1][y] = map[x+1][y];
+		otwarta[x+1][y] = 0;
+		parent[x+1][y] = 0;
 	}	
 	
 if ( (map[x][y-1] == 0) && ((y-1) > 0) )
 	{
 		cout<<"lewo istnieje\n";
-		otwarta[x][y-1] = map[x][y-1];
+		otwarta[x][y-1] = 1;
+		parent[x][y-1] = 1;
 	}
 	
 if ( (map[x-1][y] == 0) && ((x-1) > 0) )
 	{
 		cout<<"gora istnieje\n";
-		otwarta[x-1][y] = map[x-1][y];
+		otwarta[x-1][y] = 2;
+		parent[x-1][y] = 2;
 	}	
 	
 if ( (map[x][y+1] == 0) && ((y+1) <= wym1) ) 
 	{
 		cout<<"prawo istnieje\n";
-		otwarta[x][y+1] = map[x][y+1];
+		otwarta[x][y+1] = 3;
+		parent[x][y+1] = 3;
 	}
 }	
+	
+	
+void oblicz_koszta(int otwarta[wym2][wym1], float koszta[wym2][wym1], int start_x,int start_y,int cel_x,int cel_y)
+{
+	
+	float h = funkcja_h(start_x,start_y,cel_x,cel_y);
+	
+	for(int i=1;i<wym2+1;i++)
+ 	{
+  		for(int j=1;j<wym1+1;j++)
+  		{
+    		if (otwarta[i][j] != 5)
+    		{
+    			
+    		cout<<endl<<i<<j<<endl<<endl;
+    		float g = funkcja_g(start_x,start_y,i,j);
+    		float f = h + g;
+    		koszta[i][j] = f;
+    			
+    			
+			}
+   		}
+ 	}
+	
+}
+	
+	
 	
 
 void wyczysc_otwarta(int otwarta[wym2][wym1])
@@ -70,7 +92,7 @@ void wyczysc_otwarta(int otwarta[wym2][wym1])
  	{
   		for(int j=1;j<wym1+1;j++)
   		{
-    		otwarta[i][j] = 1;
+    		otwarta[i][j] = 5;
    		}
  	}
 }
@@ -103,15 +125,16 @@ double h[wym2][wym1];
 int otwarta[wym2][wym1];
 int zamknieta[wym2][wym1];
 zamknieta[0][0] = start;
-double koszta[wym2][wym1];
+float koszta[wym2][wym1];
 int trasa[wym2][wym1];
 
- //wypelnianie listy otwartej
- for(int i=1;i<wym2+1;i++)
+
+//wypelnienie koszta
+for(int i=1;i<wym2+1;i++)
  {
   for(int j=1;j<wym1+1;j++)
    {
-    otwarta[i][j] = 1;
+    koszta[i][j] = 0;
    }
  }
 
@@ -146,6 +169,15 @@ for(int i=1;i<wym2+1;i++)
    }
  }
  
+ //wypelnianie listy otwartej oraz parent
+for(int i=1;i<wym2+1;i++)
+ {
+  for(int j=1;j<wym1+1;j++)
+   {
+       	otwarta[i][j] = 5;
+    	parent[i][j] = 5;
+   }
+ }
 
 
 
@@ -165,31 +197,21 @@ delete[] G;//zwalniamy tablice wskaznikow do wierszy
 
 ///////////////////////////////////////////////////////////////////////
 
-cout<<endl<<endl;
+
+
+mozliwe_do_odwiedzenia(map, otwarta, parent, 1, 1);
+
+cout<<endl<<endl<<"PARENT:\n";
 
 for(int i=1;i<wym2+1;i++)
  {
   for(int j=1;j<wym1+1;j++)
    {
-    cout<<" "<<map[i][j];
+    cout<<" "<<parent[i][j];
    }cout<<"\n";
  }
 
-mozliwe_do_odwiedzenia(map, otwarta, 1, 1);
-
-cout<<endl<<endl;
-for(int i=1;i<wym2+1;i++)
- {
-  for(int j=1;j<wym1+1;j++)
-   {
-    cout<<" "<<otwarta[i][j];
-   }cout<<"\n";
- }
- 
- 
- wyczysc_otwarta(otwarta);
- 
- cout<<endl<<endl;
+cout<<endl<<endl<<"OTWARTA:\n";
 for(int i=1;i<wym2+1;i++)
  {
   for(int j=1;j<wym1+1;j++)
@@ -198,9 +220,28 @@ for(int i=1;i<wym2+1;i++)
    }cout<<"\n";
  }
  
+ 
+// wyczysc_otwarta(otwarta);
+// 
+// cout<<endl<<endl;
+//for(int i=1;i<wym2+1;i++)
+// {
+//  for(int j=1;j<wym1+1;j++)
+//   {
+//    cout<<" "<<otwarta[i][j];
+//   }cout<<"\n";
+// }
+ 
 
-
-
+oblicz_koszta(otwarta,koszta,1,1,3,3);
+cout<<endl<<endl<<"KOSZTA:\n";
+for(int i=1;i<wym2+1;i++)
+ {
+  for(int j=1;j<wym1+1;j++)
+   {
+    cout<<" "<<koszta[i][j];
+   }cout<<"\n";
+ }
 
 
 
