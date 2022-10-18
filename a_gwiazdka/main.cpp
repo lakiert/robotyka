@@ -98,8 +98,46 @@ void wyczysc_otwarta(int otwarta[wym2][wym1])
 }
 
 
+void wybierz_po_kosztach(float koszta[wym2][wym1], int otwarta[wym2][wym1], int parent[wym2][wym1], float temp[4])
+{
 
+	int k = 0;
+	float mini = 0;
 
+	for (int i=1;i<wym2+1;i++)
+	{
+		for (int j=1;j<wym1+1;j++)
+		{
+				
+				
+			if (otwarta[i][j] != 5 )
+			{
+				
+			temp[k] = koszta[i][j];
+			k++;
+				
+			}
+	
+		}
+	}
+
+	//wyswietl temp
+
+  		for(int j=0;j<4;j++)
+  		{
+    		cout<<" "<<temp[j];
+   		}
+   		
+   	
+	mini = min(min(min(temp[0],temp[1]),temp[2]),temp[3]);
+	cout<<endl<<endl<<"mini: "<<mini;
+ 	
+ 	
+ 	
+ 	
+ 	
+
+}
 
 
 
@@ -113,30 +151,21 @@ cout<<"Wczytywanie danych z pliku\n";
 
 string nazwap="grid.txt";
 
-
+float temp[4] = {999,999,999,999};
 int map[wym2][wym1];
 int& start = map[1][1];
 int& cel = map[3][3];
 int parent[wym2][wym1];
-double f[wym2][wym1];
-int g[wym2][wym1];
-double h[wym2][wym1];
+//double f[wym2][wym1];
+//int g[wym2][wym1];
+//double h[wym2][wym1];
 
 int otwarta[wym2][wym1];
 int zamknieta[wym2][wym1];
 zamknieta[0][0] = start;
 float koszta[wym2][wym1];
-int trasa[wym2][wym1];
+//float temp[wym2][wym1];
 
-
-//wypelnienie koszta
-for(int i=1;i<wym2+1;i++)
- {
-  for(int j=1;j<wym1+1;j++)
-   {
-    koszta[i][j] = 0;
-   }
- }
 
 
 //teraz deklarujemy dynamicznie tablice do, której wczytamyu nasz plik,
@@ -169,13 +198,14 @@ for(int i=1;i<wym2+1;i++)
    }
  }
  
- //wypelnianie listy otwartej oraz parent
+ //wypelnianie listy otwartej, parent oraz koszta
 for(int i=1;i<wym2+1;i++)
  {
   for(int j=1;j<wym1+1;j++)
    {
        	otwarta[i][j] = 5;
     	parent[i][j] = 5;
+    	koszta[i][j] = 0;
    }
  }
 
@@ -232,7 +262,20 @@ for(int i=1;i<wym2+1;i++)
 //   }cout<<"\n";
 // }
  
-
+ 
+ 
+ cout<<endl<<endl<<"KOSZTA:\n";
+for(int i=1;i<wym2+1;i++)
+ {
+  for(int j=1;j<wym1+1;j++)
+   {
+    cout<<" "<<koszta[i][j];
+   }cout<<"\n";
+ }
+ 
+ 
+ 
+ 
 oblicz_koszta(otwarta,koszta,1,1,3,3);
 cout<<endl<<endl<<"KOSZTA:\n";
 for(int i=1;i<wym2+1;i++)
@@ -242,6 +285,13 @@ for(int i=1;i<wym2+1;i++)
     cout<<" "<<koszta[i][j];
    }cout<<"\n";
  }
+
+cout<<endl<<endl;
+wybierz_po_kosztach(koszta,otwarta,parent,temp);
+
+
+
+
 
 
 
