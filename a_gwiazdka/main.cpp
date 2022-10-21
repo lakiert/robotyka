@@ -98,26 +98,22 @@ void wyczysc_otwarta(int otwarta[wym2][wym1])
 }
 
 
-void wybierz_po_kosztach(float koszta[wym2][wym1], int otwarta[wym2][wym1], int parent[wym2][wym1], float temp[4])
+void wybierz_po_kosztach(int map[wym2][wym1], float koszta[wym2][wym1], int otwarta[wym2][wym1], int parent[wym2][wym1], float temp[4])
 {
 
 	int k = 0;
 	float mini = 0;
+	int maxi = 0;
 
 	for (int i=1;i<wym2+1;i++)
 	{
 		for (int j=1;j<wym1+1;j++)
-		{
-				
-				
+		{		
 			if (otwarta[i][j] != 5 )
-			{
-				
+			{	
 			temp[k] = koszta[i][j];
-			k++;
-				
+			k++;	
 			}
-	
 		}
 	}
 
@@ -128,13 +124,80 @@ void wybierz_po_kosztach(float koszta[wym2][wym1], int otwarta[wym2][wym1], int 
     		cout<<" "<<temp[j];
    		}
    		
-   	
 	mini = min(min(min(temp[0],temp[1]),temp[2]),temp[3]);
 	cout<<endl<<endl<<"mini: "<<mini;
- 	
- 	
- 	
- 	
+	
+
+ 	int licznik = 0;
+	for (int i=1;i<wym2+1;i++)
+	{
+		for (int j=1;j<wym1+1;j++)
+		{
+				
+		  if (koszta[i][j] == mini)
+          {
+			licznik++;	
+		  }
+		}
+	}
+	
+	if (licznik == 1)
+    {
+    
+       for (int i=1;i<wym2+1;i++)
+       {
+           for (int j=1;j<wym1+1;j++)
+           {
+           
+            if (koszta[i][j] == mini)
+               {
+                 map[i][j] = 3;              
+               }             
+           }
+       }
+    
+                
+    }
+    else
+    {////////
+        
+        
+        int temp2[4]={0,0,0,0};
+        int k2=0;
+        
+        for (int i=1;i<wym2+1;i++)
+       {
+           for (int j=1;j<wym1+1;j++)
+           {
+           
+            if (koszta[i][j] == mini)
+               {
+                temp2[k2] = parent[i][j];
+                k2++;      
+               }             
+           }
+       }
+       
+       
+       cout<<endl<<endl<<temp2[0]<<endl<<temp2[1];
+       maxi = max(max(max(temp2[0],temp2[1]),temp2[2]),temp2[3]);
+       cout<<endl<<endl<<maxi;
+       
+       
+       for (int i=1;i<wym2+1;i++)
+       {
+           for (int j=1;j<wym1+1;j++)
+           {
+           
+            if (otwarta[i][j] == maxi)
+               {
+                map[i][j] = 3;   
+               }             
+           }
+       }
+      
+      
+    }////////
  	
 
 }
@@ -153,8 +216,15 @@ string nazwap="grid.txt";
 
 float temp[4] = {999,999,999,999};
 int map[wym2][wym1];
-int& start = map[1][1];
-int& cel = map[3][3];
+
+int start_x = 1;
+int start_y = 1;
+int cel_x = 3;
+int cel_y = 3;
+int& start = map[start_x][start_y];
+int& cel = map[cel_x][cel_y];
+
+
 int parent[wym2][wym1];
 //double f[wym2][wym1];
 //int g[wym2][wym1];
@@ -164,7 +234,7 @@ int otwarta[wym2][wym1];
 int zamknieta[wym2][wym1];
 zamknieta[0][0] = start;
 float koszta[wym2][wym1];
-//float temp[wym2][wym1];
+
 
 
 
@@ -198,6 +268,9 @@ for(int i=1;i<wym2+1;i++)
    }
  }
  
+ map[start_x][start_y] = 3;
+ map[cel_x][cel_y] = 3;
+ 
  //wypelnianie listy otwartej, parent oraz koszta
 for(int i=1;i<wym2+1;i++)
  {
@@ -211,7 +284,7 @@ for(int i=1;i<wym2+1;i++)
 
 
 
-cout<<"\nWypisujemy na ekran\n\n";
+cout<<"\nWypisujemy na ekran MAPA\n\n";
 for(int i=1;i<wym2+1;i++)
  {
   for(int j=1;j<wym1+1;j++)
@@ -274,9 +347,8 @@ for(int i=1;i<wym2+1;i++)
  }
  
  
- 
- 
-oblicz_koszta(otwarta,koszta,1,1,3,3);
+oblicz_koszta(otwarta,koszta,start_x,start_y,cel_x,cel_y);
+
 cout<<endl<<endl<<"KOSZTA:\n";
 for(int i=1;i<wym2+1;i++)
  {
@@ -285,11 +357,32 @@ for(int i=1;i<wym2+1;i++)
     cout<<" "<<koszta[i][j];
    }cout<<"\n";
  }
+//////////
+cout<<endl<<endl<<"MAPA:\n";
 
+for(int i=1;i<wym2+1;i++)
+ {
+  for(int j=1;j<wym1+1;j++)
+   {
+    cout<<" "<<map[i][j];
+   }cout<<"\n";
+ }
+/////////
 cout<<endl<<endl;
-wybierz_po_kosztach(koszta,otwarta,parent,temp);
+wybierz_po_kosztach(map,koszta,otwarta,parent,temp);
+
+cout<<endl<<endl<<"MAPA:\n";
+
+for(int i=1;i<wym2+1;i++)
+ {
+  for(int j=1;j<wym1+1;j++)
+   {
+    cout<<" "<<map[i][j];
+   }cout<<"\n";
+ }
 
 
+cout<<map[3][3];
 
 
 
