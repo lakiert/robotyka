@@ -6,8 +6,8 @@
 
 using namespace std;
 
-const int wym2=3;
-const int wym1=3;
+const int wym2=6;
+const int wym1=6;
 
 float funkcja_h(int start_x, int start_y, int cel_x, int cel_y)
 {
@@ -29,14 +29,35 @@ return g;
 void mozliwe_do_odwiedzenia(int map[wym2][wym1], int otwarta[wym2][wym1], int parent[wym2][wym1], int &x, int &y, int zamknieta[wym2][wym1], int &finish, int cel_x, int cel_y)
 {
 	
-if ( ((x+1 == cel_x)&&(y == cel_y)) || ((x==cel_x)&&(y-1==cel_y)) || ((x-1==cel_x)&&(y==cel_y)) || ((x==cel_x)&&(y+1==cel_y)) )
+if ((x+1 == cel_x)&&(y == cel_y))
 {
 	map[cel_x][cel_y] = 3;
 	finish = 1;
+	parent[x+1][y] = 0;
+	otwarta[x+1][y] = 0;
 }
-else
+if ((x==cel_x)&&(y-1==cel_y))
 {
-		
+	map[cel_x][cel_y] = 3;
+	finish = 1;
+	parent[x][y-1] = 1;
+	otwarta[x+1][y] = 1;
+}
+if ((x-1==cel_x)&&(y==cel_y))
+{
+	map[cel_x][cel_y] = 3;
+	finish = 1;
+	parent[x-1][y] = 2;
+	otwarta[x+1][y] = 2;
+}
+if ((x==cel_x)&&(y+1==cel_y))
+{
+	map[cel_x][cel_y] = 3;
+	finish = 1;
+	parent[x][y+1] = 3;
+	otwarta[x+1][y] = 3;
+}
+	
 	
 if ( (map[x+1][y] == 0) && (zamknieta[x+1][y] == 0) && ((x+1) <= wym2) )
 	{
@@ -66,7 +87,7 @@ if ( (map[x][y+1] == 0) && (zamknieta[x][y+1] == 0) && ((y+1) <= wym1) )
 		parent[x][y+1] = 3;
 	}
 
-}
+
 }	
 	
 	
@@ -82,7 +103,7 @@ void oblicz_koszta(int otwarta[wym2][wym1], float koszta[wym2][wym1], int &roboc
     		if (otwarta[i][j] != 5)
     		{
     			
-//    		cout<<endl<<i<<j<<endl<<endl;
+
     		float g = funkcja_g(roboczy_x,roboczy_y,i,j);
     		float f = h + g;
     		koszta[i][j] = f;
@@ -130,15 +151,10 @@ void wybierz_po_kosztach(int map[wym2][wym1], float koszta[wym2][wym1], int otwa
 		}
 	}
 
-	//wyswietl temp
 
-//  		for(int j=0;j<4;j++)
-//  		{
-//    		cout<<" "<<temp[j];
-//   		}
    		
 	mini = min(min(min(temp[0],temp[1]),temp[2]),temp[3]);
-//	cout<<endl<<endl<<"mini: "<<mini;
+
 	
 
  	int licznik = 0;
@@ -195,9 +211,9 @@ void wybierz_po_kosztach(int map[wym2][wym1], float koszta[wym2][wym1], int otwa
        }
        
        
-//       cout<<endl<<endl<<temp2[0]<<endl<<temp2[1];
+
        maxi = max(max(max(temp2[0],temp2[1]),temp2[2]),temp2[3]);
-//       cout<<endl<<endl<<maxi;
+
        
        
        for (int i=1;i<wym2+1;i++)
@@ -222,6 +238,27 @@ void wybierz_po_kosztach(int map[wym2][wym1], float koszta[wym2][wym1], int otwa
 }
 
 
+bool czy_otwarta_pusta(int otwarta[wym2][wym1])
+{
+
+bool licznik = true;
+
+for(int i=1;i<wym2+1;i++)
+ {
+  for(int j=1;j<wym1+1;j++)
+   {
+    if (otwarta[i][j] != 5)
+    {
+    	licznik = false;
+    	return licznik;
+	}
+
+   }
+ }
+ 
+ return licznik;
+}
+
 
 
 int main()
@@ -236,10 +273,10 @@ string nazwap="grid.txt";
 float temp[4] = {999,999,999,999};
 int map[wym2][wym1];
 
-int start_x = 1;
-int start_y = 1;
-int cel_x = 3;
-int cel_y = 3;
+int start_x = 3;
+int start_y = 2;
+int cel_x = 2;
+int cel_y = 6;
 int start = map[start_x][start_y];
 int cel = map[cel_x][cel_y];
 
@@ -306,22 +343,6 @@ for(int i=1;i<wym2+1;i++)
  parent[start_x][start_y] = 8;
 
 
-
-
-cout<<"\nMAPA: \n\n";
-for(int i=1;i<wym2+1;i++)
- {
-  for(int j=1;j<wym1+1;j++)
-   {
-    cout<<" "<<map[i][j];
-   }cout<<"\n";
- }
-
-cout<<endl<<endl;
-cout<<"start: ["<<start_x<<", "<<start_y<<"]"<<endl;
-cout<<"cel: ["<<cel_x<<", "<<cel_y<<"]"<<endl;
- 
-   
 //na koniec czyścimy pamięć po naszej tablicy
 for(int i=0;i<wym2+1;i++)
 {delete[] G[i];}//czyscimy wiersze
@@ -334,22 +355,8 @@ delete[] G;//zwalniamy tablice wskaznikow do wierszy
 ////////////////////////ryneczek//////////////////////////////////////
 
 
-map[start_x][start_y]=3;
 
-	
-	
-while(finish == 0)
-{
-
-mozliwe_do_odwiedzenia(map, otwarta, parent, roboczy_x, roboczy_y,zamknieta,finish,cel_x,cel_y);
-oblicz_koszta(otwarta,koszta,roboczy_x,roboczy_y,cel_x,cel_y);
-wybierz_po_kosztach(map,koszta,otwarta,parent,zamknieta,temp,roboczy_x,roboczy_y);
-wyczysc_otwarta(otwarta);
-
-}
-
-
-cout<<endl<<endl<<"TRASA: "<<endl<<endl;
+cout<<"\nMAPA: \n";
 for(int i=1;i<wym2+1;i++)
  {
   for(int j=1;j<wym1+1;j++)
@@ -358,6 +365,61 @@ for(int i=1;i<wym2+1;i++)
    }cout<<"\n";
  }
 
+
+
+
+cout<<endl<<endl;
+cout<<"start: ["<<start_x<<", "<<start_y<<"]"<<endl;
+cout<<"cel: ["<<cel_x<<", "<<cel_y<<"]"<<endl;
+
+map[start_x][start_y]=3;
+map[cel_x][cel_y]=3;
+
+cout<<"\nMAPA ZE STARTEM I CELEM JAKO LICZBA 3: ";
+cout<<"\n";
+for(int i=1;i<wym2+1;i++)
+ {
+  for(int j=1;j<wym1+1;j++)
+   {
+    cout<<" "<<map[i][j];
+   }cout<<"\n";
+ }
+
+	
+	
+while(finish == 0)
+{
+
+mozliwe_do_odwiedzenia(map, otwarta, parent, roboczy_x, roboczy_y,zamknieta,finish,cel_x,cel_y);
+
+if ((czy_otwarta_pusta(otwarta) == true) && (finish == 0))
+{
+finish = 2;	
+} 
+
+oblicz_koszta(otwarta,koszta,roboczy_x,roboczy_y,cel_x,cel_y);
+wybierz_po_kosztach(map,koszta,otwarta,parent,zamknieta,temp,roboczy_x,roboczy_y);
+wyczysc_otwarta(otwarta);
+
+}
+
+
+
+
+cout<<endl<<endl<<"TRASA: \n";
+for(int i=1;i<wym2+1;i++)
+ {
+  for(int j=1;j<wym1+1;j++)
+   {
+    cout<<" "<<map[i][j];
+   }cout<<"\n";
+ }
+ 
+if(finish == 2)
+{
+	cout<<"\nERROR - NO WAY! \n";
+	cout<<"NIE ZNALEZIONO TRASY! \n\n";
+}
 
 
 cout<<"\n\nNacisnij ENTER aby zakonczyc";
