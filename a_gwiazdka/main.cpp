@@ -15,16 +15,12 @@ int start_y = 2;
 int cel_x = 2;
 int cel_y = 6;
 
-
 int map[wym2][wym1];
 int otwarta[wym2][wym1];
 int zamknieta[wym2][wym1];
 int parent[wym2][wym1];
 int trasa[wym2][wym1];
 float koszta[wym2][wym1];
-
-
-
 
 
 
@@ -70,11 +66,8 @@ float funkcja_g(int from_x, int from_y, int to_x, int to_y)
 		}
 	}
 
-		
 return krok;
 
-	
-	
 }
 
 
@@ -105,29 +98,22 @@ if ( (map[x][y+1] == 0) && ((y+1) <= wym1) && (zamknieta[x][y+1] != 1) )
 		otwarta[x][y+1] = 4;
 	}
 	
-	
 }
 
 
 void oblicz_koszta()
 {
 	
-	
 	for(int i=1;i<wym2+1;i++)
  	{
   		for(int j=1;j<wym1+1;j++)
   		{
-    		if ((otwarta[i][j]!=5)&&(otwarta[i][j]!=0))
-    		{
-    			
+    		if ((otwarta[i][j]!=5)&&(otwarta[i][j]!=0)&&(map[i][j]!=5))
+    		{	
 			float h = funkcja_h((i-1),(j-1),(cel_x-1),(cel_y-1));
     		float g = funkcja_g(start_x,start_y,i,j);
     		float f = h + g;
-    		koszta[i][j] = f;
-    			
-    			
-    		cout<<endl<<"["<<i<<","<<j<<"] - "<<koszta[i][j]<<endl;
-    			
+    		koszta[i][j] = f;	
 			}
    		}
  	}
@@ -136,11 +122,8 @@ void oblicz_koszta()
 }
 
 
-
 void wybierz_po_kosztach(int &roboczy_x, int &roboczy_y)
 {
-	
-cout<<"wybierz po kosztach dla "<<roboczy_x<<" , "<<roboczy_y<<endl;
 
 float mini = 999;
 //oblicz mini
@@ -156,8 +139,6 @@ for(int i=1;i<wym2+1;i++)
 
    }
  }
- cout<<"\nmini: "<<mini;
- 
  
  //policz ile jest mini
  int ilosc_mini=0;
@@ -173,10 +154,7 @@ for(int i=1;i<wym2+1;i++)
 
    }
  }
- cout<<"\nilosc mini: "<<ilosc_mini;
- 
- 
- 
+
  if (ilosc_mini == 1)
     {
     
@@ -204,7 +182,6 @@ for(int i=1;i<wym2+1;i++)
     else
     {////////
         
-        
         int temp2[4]={0,0,0,0};
         int k2=0;
         
@@ -221,49 +198,29 @@ for(int i=1;i<wym2+1;i++)
            }
        }
        
-       
+    int maxi = max(max(max(temp2[0],temp2[1]),temp2[2]),temp2[3]);
 
-       int maxi = max(max(max(temp2[0],temp2[1]),temp2[2]),temp2[3]);
-       cout<<"MAXI"<<maxi<<endl;
 
-       
-       
-       for (int i=1;i<wym2+1;i++)
-       {
-           for (int j=1;j<wym1+1;j++)
-           {
-           
-            if ( (otwarta[i][j] == maxi) && (koszta[i][j] == mini) && (zamknieta[i][j] !=1) )
-               {
-                zamknieta[i][j] = 1;
-                parent[i][j] = otwarta[i][j];
+	   for (int i=1;i<wym2+1;i++)
+	   {
+	       for (int j=1;j<wym1+1;j++)
+	       {
+	       
+	        if ( (otwarta[i][j] == maxi) && (koszta[i][j] == mini) && (zamknieta[i][j] !=1) )
+	           {
+	            zamknieta[i][j] = 1;
+	            parent[i][j] = otwarta[i][j];
 				otwarta[i][j] = 0;
 				koszta[i][j] = 0;
 				roboczy_x = i;
 				roboczy_y = j; 
-               }             
-           }
-       }
+	           }             
+	       }
+	   }
       
       
-    }////////
+	}////////
  
- 
- 
- 
- 
- 
- 
- 
-
- 
- 
-
-cout<<endl<<"robocze x  i y: "<<endl;
-cout<<endl<<roboczy_x<<" , "<<roboczy_y<<endl;
-
-	
-	
 }
 
 
@@ -283,7 +240,8 @@ void wyznacz_trase()
 
 	int x = cel_x;
 	int y = cel_y;
-	trasa[x][y] = 3;
+	trasa[cel_x][cel_y] = 3;
+	trasa[start_x][start_y] = 3;
 	int pomoc = parent[x][y];
 	
 	while(pomoc != parent[start_x][start_y])
@@ -314,11 +272,29 @@ void wyznacz_trase()
 		}
 	}
 
-
 }
 
 
+bool czy_otwarta_pusta()
+{
 
+	bool licznik = true;
+	
+	for(int i=1;i<wym2+1;i++)
+	{
+		  for(int j=1;j<wym1+1;j++)
+		   {
+		    if ( (otwarta[i][j] != 0) && (otwarta[i][j] != 5) )
+		    {
+		    	licznik = false;
+		    	return licznik;
+			}
+		
+		   }
+ 	}
+ 
+ return licznik;
+}
 
 
 void a_star()
@@ -332,52 +308,30 @@ void a_star()
 while(finish == 0)
 {							
 	
-mozliwe_do_odwiedzenia(x,y);
-oblicz_koszta();
-wybierz_po_kosztach(x,y);
-finish = sprawdz_finish(x,y,finish);
+	mozliwe_do_odwiedzenia(x,y);
+	oblicz_koszta();
+	wybierz_po_kosztach(x,y);
+	finish = sprawdz_finish(x,y,finish);
+	
+	if ( (czy_otwarta_pusta() == true) && (finish == 0) )
+	{
+		finish = 2;
+	}
+
+}
+
+if(finish == 2)
+{
+	cout<<"\nERROR - NO WAY! \n";
+	cout<<"NIE ZNALEZIONO TRASY! \n\n";
+}
+else
+{
+	wyznacz_trase();
 }
 
 
-wyznacz_trase();
-	
-	cout<<"\nZAMKNIETA:\n";
-	for(int i=1;i<wym2+1;i++)
-	 {
-	  for(int j=1;j<wym1+1;j++)
-	   {
-	    cout<<zamknieta[i][j]<<" ";
-	   }cout<<endl;
-	 }
-	 
-	 cout<<"\nOTWARTA:\n";
-	for(int i=1;i<wym2+1;i++)
-	 {
-	  for(int j=1;j<wym1+1;j++)
-	   {
-	    cout<<otwarta[i][j]<<" ";
-	   }cout<<endl;
-	 }
-	 
-	 cout<<"\nKOSZTA:\n";
-	for(int i=1;i<wym2+1;i++)
-	 {
-	  for(int j=1;j<wym1+1;j++)
-	   {
-	    cout<<koszta[i][j]<<" ";
-	   }cout<<endl;
-	 }
-	 
-	 cout<<"\nPARENT:\n";
-	for(int i=1;i<wym2+1;i++)
-	 {
-	  for(int j=1;j<wym1+1;j++)
-	   {
-	    cout<<parent[i][j]<<" ";
-	   }cout<<endl;
-	 }
-	 
-	 cout<<"\nTRASA:\n";
+	cout<<"\nTRASA:\n";
 	for(int i=1;i<wym2+1;i++)
 	 {
 	  for(int j=1;j<wym1+1;j++)
@@ -386,34 +340,7 @@ wyznacz_trase();
 	   }cout<<endl;
 	 }
 
-
-	
 }
-
-
-
-
-bool czy_otwarta_pusta(int otwarta[wym2][wym1])
-{
-
-bool licznik = true;
-
-for(int i=1;i<wym2+1;i++)
- {
-  for(int j=1;j<wym1+1;j++)
-   {
-    if ( (otwarta[i][j] != 5) || (otwarta[i][j] != 5) )
-    {
-    	licznik = false;
-    	return licznik;
-	}
-
-   }
- }
- 
- return licznik;
-}
-
 
 
 
@@ -462,10 +389,10 @@ for(int i=0;i<wym2+1;i++)
 {delete[] G[i];}//czyscimy wiersze
 delete[] G;//zwalniamy tablice wskaznikow do wierszy
 
-///////////////////////////////////////////////////////////////////////
-////////////////////////ryneczek///////////////////////////////////////
-///////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 
 
 
@@ -511,28 +438,7 @@ for(int i=1;i<wym2+1;i++)
 
 
 
-
-///////////////////////////////////////////////////////////////////////
-////////////////////////ryneczek///////////////////////////////////////
-///////////////////////////////////////////////////////////////////////
-
-
-cout<<"\nPARENT:\n";
-	for(int i=1;i<wym2+1;i++)
-	 {
-	  for(int j=1;j<wym1+1;j++)
-	   {
-	    cout<<parent[i][j]<<" ";
-	   }cout<<endl;
-	 }
-
-
-
 a_star();
-
-
-
-
 
 
 
@@ -540,8 +446,6 @@ a_star();
 
 cout<<"\n\nNacisnij ENTER aby zakonczyc";
 getchar();
-
-
 
 
     return 0;
