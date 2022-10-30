@@ -406,13 +406,28 @@ for(int i=1;i<wym2+1;i++)
    }cout<<endl;
  }
  
- //wypelnienie otwartej i trasy
+ //wypelnienie otwartej
 for(int i=1;i<wym2+1;i++)
  {
   for(int j=1;j<wym1+1;j++)
    {
-   	trasa[i][j] = map[i][j];
     otwarta[i][j] = map[i][j];
+   }
+ }
+ 
+  //wypelnienie trasy
+for(int i=1;i<wym2+1;i++)
+ {
+  for(int j=1;j<wym1+1;j++)
+   {
+   	if ( ((i==start_x)&&(j==start_y)) || ((i==cel_x)&&(j==cel_y)) )
+   	{
+   		trasa[i][j] = 3;
+	}
+	else
+	{
+		trasa[i][j] = map[i][j];
+	}
    }
  }
 
