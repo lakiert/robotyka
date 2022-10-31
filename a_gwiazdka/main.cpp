@@ -8,12 +8,12 @@
 
 using namespace std;
 
-const int wym2=5;
-const int wym1=5;
-int start_x = 4;
-int start_y = 1;
+const int wym2=6;
+const int wym1=6;
+int start_x = 3;
+int start_y = 2;
 int cel_x = 2;
-int cel_y = 5;
+int cel_y = 6;
 
 int map[wym2][wym1];
 int otwarta[wym2][wym1];
