@@ -224,15 +224,43 @@ for(int i=1;i<wym2+1;i++)
 }
 
 
+bool czy_otwarta_pusta()
+{
+
+	bool licznik = true;
+	
+	for(int i=1;i<wym2+1;i++)
+	{
+		  for(int j=1;j<wym1+1;j++)
+		   {
+		    if ( (otwarta[i][j] != 0) && (otwarta[i][j] != 5) )
+		    {
+		    	licznik = false;
+		    	return licznik;
+			}
+		
+		   }
+ 	}
+ 
+ return licznik;
+}
+
+
+
 int sprawdz_finish(int &roboczy_x, int &roboczy_y,int &finish)
 {
+	
+	
 	if( (roboczy_x == cel_x) && (roboczy_y == cel_y)  )
 	{
 		finish = 1;
 		zamknieta[cel_x][cel_y] = 8;
 	}
+
 	return finish;
 }
+
+
 
 
 void wyznacz_trase()
@@ -275,26 +303,7 @@ void wyznacz_trase()
 }
 
 
-bool czy_otwarta_pusta()
-{
 
-	bool licznik = true;
-	
-	for(int i=1;i<wym2+1;i++)
-	{
-		  for(int j=1;j<wym1+1;j++)
-		   {
-		    if ( (otwarta[i][j] != 0) && (otwarta[i][j] != 5) )
-		    {
-		    	licznik = false;
-		    	return licznik;
-			}
-		
-		   }
- 	}
- 
- return licznik;
-}
 
 
 void a_star()
@@ -306,28 +315,32 @@ void a_star()
 
 
 while(finish == 0)
-{							
-	
+{				
+
+
 	mozliwe_do_odwiedzenia(x,y);
+	
+	if ((czy_otwarta_pusta() == true) && (finish == 0))
+	{
+		finish=2;
+	}
+	
 	oblicz_koszta();
 	wybierz_po_kosztach(x,y);
 	finish = sprawdz_finish(x,y,finish);
 	
-	if ( (czy_otwarta_pusta() == true) && (finish == 0) )
-	{
-		finish = 2;
-	}
 
 }
 
-if(finish == 2)
+
+if(finish == 1)
 {
-	cout<<"\nERROR - NO WAY! \n";
-	cout<<"NIE ZNALEZIONO TRASY! \n\n";
+	wyznacz_trase();	
 }
 else
 {
-	wyznacz_trase();
+	cout<<"\nERROR - NO WAY! \n";
+	cout<<"NIE ZNALEZIONO TRASY! \n";
 }
 
 
@@ -341,7 +354,6 @@ else
 	 }
 
 }
-
 
 
 
@@ -451,11 +463,7 @@ for(int i=1;i<wym2+1;i++)
  }
 
 
-
-
 a_star();
-
-
 
 
 
