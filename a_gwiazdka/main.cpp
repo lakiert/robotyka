@@ -8,17 +8,18 @@
 
 using namespace std;
 
-const int wym2=6;
-const int wym1=6;
-int start_x = 3;
-int start_y = 2;
+const int wym2=5;
+const int wym1=5;
+int start_x = 4;
+int start_y = 1;
 int cel_x = 2;
-int cel_y = 6;
+int cel_y = 5;
 
 int map[wym2][wym1];
 int otwarta[wym2][wym1];
 int zamknieta[wym2][wym1];
 int parent[wym2][wym1];
+int priorytet[wym2][wym1];
 int trasa[wym2][wym1];
 float koszta[wym2][wym1];
 
@@ -71,37 +72,54 @@ return krok;
 }
 
 
-void mozliwe_do_odwiedzenia(int &x, int &y)
+
+
+void mozliwe_do_odwiedzenia()
 {
 	
-	if ( (map[x+1][y] == 0) && ((x+1) <= wym2) && (zamknieta[x+1][y] != 1) )
-	{
-	//	cout<<"dol istnieje\n";
-		otwarta[x+1][y] = 1;
-	}	
+	for(int x=1;x<wym2+1;x++)
+ 	{
+  		for(int y=1;y<wym1+1;y++)
+  		{
+    	
+		if ( (map[x+1][y] == 0) && ((x+1) <= wym2) && (zamknieta[x+1][y] != 1) && (zamknieta[x][y] == 1) )
+		{
+		//	cout<<"dol istnieje\n";
+			otwarta[x+1][y] = 1;
+		}	
+		
+		if ( (map[x][y-1] == 0) && ((y-1) > 0) && (zamknieta[x][y-1] != 1) && (zamknieta[x][y] == 1) )
+		{
+		//	cout<<"lewo istnieje\n";
+			otwarta[x][y-1] = 2;
+		}
+		
+		if ( (map[x-1][y] == 0) && ((x-1) > 0) && (zamknieta[x-1][y] != 1) && (zamknieta[x][y] == 1) )
+		{
+		//	cout<<"gora istnieje\n";
+			otwarta[x-1][y] = 3;
+		}	
+		
+		if ( (map[x][y+1] == 0) && ((y+1) <= wym1) && (zamknieta[x][y+1] != 1) && (zamknieta[x][y] == 1) ) 
+		{
+		//	cout<<"prawo istnieje\n";
+			otwarta[x][y+1] = 4;
+		}
+		
+		
+		
+   		}
+ 	}
 	
-if ( (map[x][y-1] == 0) && ((y-1) > 0) && (zamknieta[x][y-1] != 1) )
-	{
-	//	cout<<"lewo istnieje\n";
-		otwarta[x][y-1] = 2;
-	}
 	
-if ( (map[x-1][y] == 0) && ((x-1) > 0) && (zamknieta[x-1][y] != 1) )
-	{
-	//	cout<<"gora istnieje\n";
-		otwarta[x-1][y] = 3;
-	}	
-	
-if ( (map[x][y+1] == 0) && ((y+1) <= wym1) && (zamknieta[x][y+1] != 1) ) 
-	{
-	//	cout<<"prawo istnieje\n";
-		otwarta[x][y+1] = 4;
-	}
+
 	
 }
 
 
-void oblicz_koszta()
+
+
+void oblicz_koszta(int prio)
 {
 	
 	for(int i=1;i<wym2+1;i++)
@@ -113,7 +131,8 @@ void oblicz_koszta()
 			float h = funkcja_h((i-1),(j-1),(cel_x-1),(cel_y-1));
     		float g = funkcja_g(start_x,start_y,i,j);
     		float f = h + g;
-    		koszta[i][j] = f;	
+    		koszta[i][j] = f;
+			priorytet[i][j] = prio;	
 			}
    		}
  	}
@@ -122,7 +141,32 @@ void oblicz_koszta()
 }
 
 
-void wybierz_po_kosztach(int &roboczy_x, int &roboczy_y)
+int find_max(int tablica[wym2][wym1])
+{
+
+	int maximum = 0;
+	for(int i=1; i<=wym2; i++)
+	{
+		for(int j=1; j<=wym1; j++)
+		{
+			if (tablica[i][j] > maximum)
+			{
+				maximum = tablica[i][j];
+			}
+		}
+			
+	}
+	
+	
+	return maximum;
+	
+}
+
+
+
+
+
+void wybierz_po_kosztach()
 {
 
 float mini = 999;
@@ -132,7 +176,7 @@ for(int i=1;i<wym2+1;i++)
   for(int j=1;j<wym1+1;j++)
    {
 
-	if ((koszta[i][j] != 0) && (koszta[i][j] < mini) && (zamknieta[i][j] == 0))
+	if ((koszta[i][j] != 0) && (koszta[i][j] < mini) &&   (zamknieta[i][j] != 1) )
 	{
 		mini = koszta[i][j];
 	}
@@ -170,8 +214,7 @@ for(int i=1;i<wym2+1;i++)
                 parent[i][j] = otwarta[i][j];
 				otwarta[i][j] = 0;
 				koszta[i][j] = 0;
-				roboczy_x = i;
-				roboczy_y = j;
+
 			}
 		
 		   }
@@ -182,23 +225,8 @@ for(int i=1;i<wym2+1;i++)
     else
     {////////
         
-        int temp2[4]={0,0,0,0};
-        int k2=0;
-        
-        for (int i=1;i<wym2+1;i++)
-       {
-           for (int j=1;j<wym1+1;j++)
-           {
-           
-            if (koszta[i][j] == mini)
-               {
-                temp2[k2] = otwarta[i][j];
-                k2++;      
-               }             
-           }
-       }
-       
-    int maxi = max(max(max(temp2[0],temp2[1]),temp2[2]),temp2[3]);
+
+    int maxi = find_max(priorytet);
 
 
 	   for (int i=1;i<wym2+1;i++)
@@ -206,14 +234,12 @@ for(int i=1;i<wym2+1;i++)
 	       for (int j=1;j<wym1+1;j++)
 	       {
 	       
-	        if ( (otwarta[i][j] == maxi) && (koszta[i][j] == mini) && (zamknieta[i][j] !=1) )
+	        if ( (priorytet[i][j] == maxi) && (koszta[i][j] == mini) && (zamknieta[i][j] !=1))
 	           {
 	            zamknieta[i][j] = 1;
 	            parent[i][j] = otwarta[i][j];
 				otwarta[i][j] = 0;
-				koszta[i][j] = 0;
-				roboczy_x = i;
-				roboczy_y = j; 
+				koszta[i][j] = 0; 
 	           }             
 	       }
 	   }
@@ -247,11 +273,11 @@ bool czy_otwarta_pusta()
 
 
 
-int sprawdz_finish(int &roboczy_x, int &roboczy_y,int &finish)
+int sprawdz_finish(int &finish)
 {
 	
 	
-	if( (roboczy_x == cel_x) && (roboczy_y == cel_y)  )
+	if (parent[cel_x][cel_y] != 0)
 	{
 		finish = 1;
 		zamknieta[cel_x][cel_y] = 8;
@@ -311,23 +337,25 @@ void a_star()
 	
 	int x = start_x;
 	int y = start_y;
-	int finish = 0;		
+	int finish = 0;
+	int prio = 0;	
 
 
 while(finish == 0)
 {				
+	prio++;
 
+	mozliwe_do_odwiedzenia();
 
-	mozliwe_do_odwiedzenia(x,y);
 	
 	if ((czy_otwarta_pusta() == true) && (finish == 0))
 	{
 		finish=2;
 	}
-	
-	oblicz_koszta();
-	wybierz_po_kosztach(x,y);
-	finish = sprawdz_finish(x,y,finish);
+
+	oblicz_koszta(prio);
+	wybierz_po_kosztach();
+	finish = sprawdz_finish(finish);
 	
 
 }
@@ -352,6 +380,7 @@ else
 	    cout<<trasa[i][j]<<" ";
 	   }cout<<endl;
 	 }
+
 
 }
 
@@ -424,6 +453,7 @@ for(int i=1;i<wym2+1;i++)
   for(int j=1;j<wym1+1;j++)
    {
     otwarta[i][j] = map[i][j];
+    priorytet[i][j] = 0;
    }
  }
  
